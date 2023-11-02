@@ -1,0 +1,5 @@
+F:/UnityWorkspace/UnityProj/findCard/.utmp/RelWithDebInfo/5z2v175l/armeabi-v7a/CMakeFiles/edit_cache.dir
+F:/UnityWorkspace/UnityProj/findCard/.utmp/RelWithDebInfo/5z2v175l/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+F:/UnityWorkspace/UnityProj/findCard/.utmp/RelWithDebInfo/5z2v175l/armeabi-v7a/FramePacing/CMakeFiles/swappywrapper.dir
+F:/UnityWorkspace/UnityProj/findCard/.utmp/RelWithDebInfo/5z2v175l/armeabi-v7a/FramePacing/CMakeFiles/edit_cache.dir
+F:/UnityWorkspace/UnityProj/findCard/.utmp/RelWithDebInfo/5z2v175l/armeabi-v7a/FramePacing/CMakeFiles/rebuild_cache.dir
