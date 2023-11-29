@@ -6,23 +6,22 @@ public class Card : MonoBehaviour
 {
     public Animator anim;
     public AudioClip flip;
-    public AudioSource audioSource;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void OpenCard()
     {
-        audioSource.PlayOneShot(flip);
+        GameManager.I.audioSource.PlayOneShot(flip);
 
         anim.SetBool("isOpen", true);
         transform.Find("front").gameObject.SetActive(true);
@@ -30,12 +29,12 @@ public class Card : MonoBehaviour
 
         if (GameManager.I.firstCard == null)
         {
-            GameManager.I.timecount = GameManager.I.time;
+            GameManager.I.flipCnt = GameManager.I.elapsedTime;
             GameManager.I.firstCard = gameObject;
         }
         else
         {
-            GameManager.I.timecount = 0;
+            GameManager.I.flipCnt = 0;
             GameManager.I.secondCard = gameObject;
             GameManager.I.IsMatched();
         }

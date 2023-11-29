@@ -6,27 +6,29 @@ using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
-    public Text timeTxt;
+    public Text timeCnt;
     public GameObject card;
     public GameObject firstCard;
     public GameObject secondCard;
     public GameObject endTxt;
-    public Text result;
-    public Text tryCount;
+
+    public Text tryCnt;
 
     public static GameManager I;
+    // 싱글톤 공부 -> 설명 가능한 수준까지 
 
-    public AudioClip match;
-    public AudioClip miss;
-    public AudioClip clear;
-    public AudioClip fail;
+    public AudioClip matchAudio;
+    public AudioClip missAudio;
+    public AudioClip clearAudio;
+    public AudioClip failAudio;
     public AudioSource audioSource;
 
     int count = 0;
-    public float time;
-    public float timecount;
+    public float elapsedTime;
+    float remainTime = 50.0f;
+    public float flipCnt;
 
-    string[] cardName = {"rtan0", "rtan1", "rtan2", "rtan3", "rtan4", "rtan5", "rtan6", "rtan7"};
+    string[] cardName = { "rtan0", "rtan1", "rtan2", "rtan3", "rtan4", "rtan5", "rtan6", "rtan7" };
 
     void Awake()
     {
@@ -43,8 +45,8 @@ public class GameManager : MonoBehaviour
         //rtans = rtans.OrderBy(itme => Random.Range(-1.0f, 1.0f)).ToArray();
 
         //대체 코드
-        List<int> initRtans 
-            = new List<int>{ 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7 };
+        List<int> initRtans
+            = new() { 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7 };
         int[] rtans = new int[16];
 
         for (int i = 0; i < 16; i++)
@@ -60,7 +62,7 @@ public class GameManager : MonoBehaviour
             GameObject newCard = Instantiate(card);
             newCard.transform.parent
                 = GameObject.Find("Cards").transform;
-
+            
             float x = (i / 4) * 1.4f - 2.1f;
             float y = (i % 4) * 1.4f - 3.0f;
             newCard.transform.position = new Vector3(x, y, 0);
@@ -68,36 +70,46 @@ public class GameManager : MonoBehaviour
             string rtanName = "rtan" + rtans[i].ToString();
             newCard.transform.Find("front").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(rtanName);
         }
+        /*
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                float x = (i / 4) * 1.4f - 2.1f;
+                float y = (j % 4) * 1.4f - 3.0f;
+                newCard.transform.position = new Vector3(x, y, 0);
+            }
+        }*/
     }
 
     // Update is called once per frame
     void Update()
     {
-        time += Time.deltaTime;
-        
-        if (time >= 50.0f)
+        elapsedTime += Time.deltaTime;
+
+        if ( (remainTime - elapsedTime) <= 0.0f)
         {
-            audioSource.PlayOneShot(fail);
+            audioSource.PlayOneShot(failAudio);
             endTxt.SetActive(true);
             Time.timeScale = 0.0f;
         }
-        timeTxt.text = time.ToString("N2");
+        timeCnt.text = (remainTime - elapsedTime).ToString("N2");
 
         if (firstCard == null)
         {
-            timecount = time;
+            flipCnt = elapsedTime;
         }
-        else if ( (time - timecount) > 5.0f)
+        else if ((flipCnt - elapsedTime) > 5.0f)
         {
             firstCard.GetComponent<Card>().CloseCard();
-            GameManager.I.firstCard = null;
+            firstCard = null;
         }
     }
 
     public void IsMatched()
     {
         count += 1;
-        tryCount.text = count.ToString();
+        tryCnt.text = count.ToString();
         string firstCardImage = firstCard.transform.Find("front")
             .GetComponent<SpriteRenderer>().sprite.name;
         string secondCardImage = secondCard.transform.Find("front")
@@ -105,9 +117,7 @@ public class GameManager : MonoBehaviour
 
         if (firstCardImage == secondCardImage)
         {
-            result.text = "성공!";
-            audioSource.PlayOneShot(match);
-
+            audioSource.PlayOneShot(matchAudio);
             //Debug.Log("equal");
             firstCard.GetComponent<Card>().DestroyCard();
             secondCard.GetComponent<Card>().DestroyCard();
@@ -117,16 +127,15 @@ public class GameManager : MonoBehaviour
             //Debug.Log(cardsLeft);
             if (cardsLeft == 2)
             {
-                audioSource.PlayOneShot(clear);
+                audioSource.PlayOneShot(clearAudio);
                 endTxt.SetActive(true);
                 Time.timeScale = 0.0f;
             }
         }
         else
         {
-            result.text = "실패!, 0.5초 패널티!";
-            time += 0.5f;
-            audioSource.PlayOneShot(miss);
+            elapsedTime += 0.5f;
+            audioSource.PlayOneShot(missAudio);
 
             //Debug.Log("not equal");
             firstCard.GetComponent<Card>().CloseCard();
