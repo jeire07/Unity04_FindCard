@@ -1,31 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ResultBox : MonoBehaviour
 {
-    public GameObject success;
-    public GameObject fail;
-    public GameObject penalty;
+    public GameObject Success {  get; private set; }
+    public GameObject Fail { get; private set; }
+    public GameObject Penalty { get; private set; }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    public void Success()
+    public void MatchSuccess()
     {
         transform.Find("Success").gameObject.SetActive(true);
     }
 
-    public void Fail()
+    public void MatchFail()
     {
         transform.Find("Fail").gameObject.SetActive(true);
         transform.Find("Penalty").gameObject.SetActive(true);

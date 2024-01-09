@@ -1,42 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Card : MonoBehaviour
 {
-    public Animator anim;
-    public AudioClip flip;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+    private Animator _anim;
+    private AudioClip _flip;
 
     public void OpenCard()
     {
-        GameManager.I.audioSource.PlayOneShot(flip);
+        GameManager.Instance.audioSource.PlayOneShot(_flip);
 
-        anim.SetBool("isOpen", true);
+        _anim.SetBool("isOpen", true);
         transform.Find("front").gameObject.SetActive(true);
         transform.Find("back").gameObject.SetActive(false);
 
-        if (GameManager.I.firstCard == null)
+        if (GameManager.Instance.FirstCard == null)
         {
-            GameManager.I.flipCnt = GameManager.I.elapsedTime;
-            GameManager.I.firstCard = gameObject;
+            GameManager.Instance.flipCnt = GameManager.Instance._elapsedTime;
+            GameManager.Instance.FirstCard = gameObject;
         }
         else
         {
-            GameManager.I.flipCnt = 0;
-            GameManager.I.secondCard = gameObject;
-            GameManager.I.IsMatched();
+            GameManager.Instance.flipCnt = 0;
+            GameManager.Instance.SecondCard = gameObject;
+            GameManager.Instance.IsMatched();
         }
     }
 
@@ -45,7 +31,7 @@ public class Card : MonoBehaviour
         Invoke("DestroyCardInvoke", 0.5f);
     }
 
-    void DestroyCardInvoke()
+    private void DestroyCardInvoke()
     {
         Destroy(gameObject);
     }
@@ -55,9 +41,9 @@ public class Card : MonoBehaviour
         Invoke("CloseCardInvoke", 0.5f);
     }
 
-    void CloseCardInvoke()
+    private void CloseCardInvoke()
     {
-        anim.SetBool("isOpen", false);
+        _anim.SetBool("isOpen", false);
         transform.Find("back").gameObject.SetActive(true);
         transform.Find("front").gameObject.SetActive(false);
     }

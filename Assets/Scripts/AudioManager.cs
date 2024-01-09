@@ -1,21 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    public AudioClip bgmusic;
+    public AudioClip BGMusic;
 
     // Start is called before the first frame update
     void Start()
     {
-        GameManager.I.audioSource.clip = bgmusic;
-        GameManager.I.audioSource.Play();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        GameManager.Instance.audioSource.clip = BGMusic;
+        GameManager.Instance.audioSource.Play();
     }
 }

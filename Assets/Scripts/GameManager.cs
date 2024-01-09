@@ -1,50 +1,41 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
-    public Text timeCnt;
-    public GameObject card;
-    public GameObject firstCard;
-    public GameObject secondCard;
-    public GameObject endTxt;
-
-    public Text tryCnt;
-
-    public static GameManager I;
-    // 싱글톤 공부 -> 설명 가능한 수준까지 
-
+    public GameObject Card { get; set; }
+    public GameObject FirstCard { get; set; }
+    public GameObject SecondCard { get; set; }
+    public GameObject EndTxt { get; set; }
+    public Text TimeCnt { get; set; }
+    public Text TryCnt { get; set; }
+    
+    public static GameManager Instance { get; set; }
+    
     public AudioClip matchAudio;
     public AudioClip missAudio;
     public AudioClip clearAudio;
     public AudioClip failAudio;
     public AudioSource audioSource;
-
-    int count = 0;
-    public float elapsedTime;
-    float remainTime = 50.0f;
-    public float flipCnt;
-
-    string[] cardName = { "rtan0", "rtan1", "rtan2", "rtan3", "rtan4", "rtan5", "rtan6", "rtan7" };
-
+    
+    public float _elapsedTime { get; set; }
+    
+    public float flipCnt { get; set; }
+    
+    private float _remainTime = 50.0f;
+    private int _count = 0;
+    
     void Awake()
     {
-        I = this;
+        Instance = this;
     }
-
+    
     // Start is called before the first frame update
     void Start()
     {
         Time.timeScale = 1.0f;
 
-        //강의 자료 코드
-        //int[] rtans = { 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7 };
-        //rtans = rtans.OrderBy(itme => Random.Range(-1.0f, 1.0f)).ToArray();
-
-        //대체 코드
         List<int> initRtans
             = new() { 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7 };
         int[] rtans = new int[16];
@@ -59,7 +50,7 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < 16; i++)
         {
-            GameObject newCard = Instantiate(card);
+            GameObject newCard = Instantiate(Card);
             newCard.transform.parent
                 = GameObject.Find("Cards").transform;
             
@@ -70,57 +61,47 @@ public class GameManager : MonoBehaviour
             string rtanName = "rtan" + rtans[i].ToString();
             newCard.transform.Find("front").GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(rtanName);
         }
-        /*
-        for (int i = 0; i < 4; i++)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                float x = (i / 4) * 1.4f - 2.1f;
-                float y = (j % 4) * 1.4f - 3.0f;
-                newCard.transform.position = new Vector3(x, y, 0);
-            }
-        }*/
     }
 
     // Update is called once per frame
     void Update()
     {
-        elapsedTime += Time.deltaTime;
+        _elapsedTime += Time.deltaTime;
 
-        if ( (remainTime - elapsedTime) <= 0.0f)
+        if ( (_remainTime - _elapsedTime) <= 0.0f)
         {
             audioSource.PlayOneShot(failAudio);
-            endTxt.SetActive(true);
+            EndTxt.SetActive(true);
             Time.timeScale = 0.0f;
         }
-        timeCnt.text = (remainTime - elapsedTime).ToString("N2");
+        TimeCnt.text = (_remainTime - _elapsedTime).ToString("N2");
 
-        if (firstCard == null)
+        if (FirstCard == null)
         {
-            flipCnt = elapsedTime;
+            flipCnt = _elapsedTime;
         }
-        else if ((flipCnt - elapsedTime) > 5.0f)
+        else if ((flipCnt - _elapsedTime) > 5.0f)
         {
-            firstCard.GetComponent<Card>().CloseCard();
-            firstCard = null;
+            FirstCard.GetComponent<Card>().CloseCard();
+            FirstCard = null;
         }
     }
 
     public void IsMatched()
     {
-        count += 1;
-        tryCnt.text = count.ToString();
-        string firstCardImage = firstCard.transform.Find("front")
+        _count += 1;
+        TryCnt.text = _count.ToString();
+        string firstCardImage = FirstCard.transform.Find("front")
             .GetComponent<SpriteRenderer>().sprite.name;
-        string secondCardImage = secondCard.transform.Find("front")
+        string secondCardImage = SecondCard.transform.Find("front")
             .GetComponent<SpriteRenderer>().sprite.name;
 
         if (firstCardImage == secondCardImage)
         {
             audioSource.PlayOneShot(matchAudio);
             //Debug.Log("equal");
-            firstCard.GetComponent<Card>().DestroyCard();
-            secondCard.GetComponent<Card>().DestroyCard();
+            FirstCard.GetComponent<Card>().DestroyCard();
+            SecondCard.GetComponent<Card>().DestroyCard();
 
             int cardsLeft = GameObject.Find("Cards")
                 .transform.childCount;
@@ -128,21 +109,21 @@ public class GameManager : MonoBehaviour
             if (cardsLeft == 2)
             {
                 audioSource.PlayOneShot(clearAudio);
-                endTxt.SetActive(true);
+                EndTxt.SetActive(true);
                 Time.timeScale = 0.0f;
             }
         }
         else
         {
-            elapsedTime += 0.5f;
+            _elapsedTime += 0.5f;
             audioSource.PlayOneShot(missAudio);
 
             //Debug.Log("not equal");
-            firstCard.GetComponent<Card>().CloseCard();
-            secondCard.GetComponent<Card>().CloseCard();
+            FirstCard.GetComponent<Card>().CloseCard();
+            SecondCard.GetComponent<Card>().CloseCard();
         }
 
-        firstCard = null;
-        secondCard = null;
+        FirstCard = null;
+        SecondCard = null;
     }
 }
